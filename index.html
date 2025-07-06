@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Blog & Digital Garden</title>
+    <meta name="description" content="A minimalist personal blog and digital garden featuring thoughts on work, technology, and life">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Personal Blog & Digital Garden">
+    <meta property="og:description" content="A minimalist personal blog and digital garden featuring thoughts on work, technology, and life">
+    <meta property="og:type" content="website">
+    
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* CSS Variables */
+        :root {
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(0, 0%, 0%);
+            --muted: hsl(0, 0%, 96%);
+            --muted-foreground: hsl(0, 0%, 40%);
+            --accent: hsl(207, 90%, 54%);
+            --border: hsl(0, 0%, 90%);
+        }
+        
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Layout */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background-color: var(--background);
+            padding: 2rem;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border);
+        }
+        
+        .sidebar h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .sidebar .subtitle {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-section h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--muted-foreground);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--foreground);
+            font-size: 0.875rem;
+            padding: 0.25rem 0;
+            transition: color 0.2s;
+            cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent);
+        }
+        
+        .nav-link.active {
+            color: var(--accent);
+        }
+        
+        /* Main content */
+        .main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+        }
+        
+        .welcome-section {
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-section h2 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .welcome-section p {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            color: var(--muted-foreground);
+        }
+        
+        .posts-section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .see-all {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .see-all:hover {
+            text-decoration: underline;
+        }
+        
+        .post-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .post-card {
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            background-color: var(--background);
+            transition: box-shadow 0.2s;
+        }
+        
+        .post-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-card h4 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .post-card .excerpt {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+        
+        .post-card .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .category-badge {
+            background-color: var(--muted);
+            color: var(--muted-foreground);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        
+        .post-content {
+            display: none;
+        }
+        
+        .post-content.active {
+            display: block;
+        }
+        
+        .post-content h1 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .post-content h2 {
+            font-size: 1.75rem;
+            font-weight: 400;
+            margin: 2rem 0 1rem 0;
+            line-height: 1.3;
+        }
+        
+        .post-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.125rem;
+            line-height: 1.7;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .back-button:hover {
+            text-decoration: underline;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .main {
+                padding: 1rem;
+            }
+            
+            .welcome-section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .post-content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h1>Your Name</h1>
+            <p class="subtitle">Personal blog & digital garden</p>
+            
+            <nav>
+                <div class="nav-section">
+                    <h3>Navigation</h3>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link active" onclick="showHome()">Home</a>
+                        <a href="#" class="nav-link" onclick="showAllPosts()">All Posts</a>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Work</h3>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link" onclick="showCategory('work')">Projects</a>
+                        <a href="#" class="nav-link" onclick="showCategory('work')">Research</a>
+                        <a href="#" class="nav-link" onclick="showCategory('work')">Writing</a>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Speaking & Events</h3>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link" onclick="showCategory('speaking')">Talks</a>
+                        <a href="#" class="nav-link" onclick="showCategory('speaking')">Workshops</a>
+                        <a href="#" class="nav-link" onclick="showCategory('speaking')">Conferences</a>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Climate</h3>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link" onclick="showCategory('climate')">Research</a>
+                        <a href="#" class="nav-link" onclick="showCategory('climate')">Policy</a>
+                        <a href="#" class="nav-link" onclick="showCategory('climate')">Action</a>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Metascience Progress & Abundance</h3>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link" onclick="showCategory('metascience')">Essays</a>
+                        <a href="#" class="nav-link" onclick="showCategory('metascience')">Reviews</a>
+                        <a href="#" class="nav-link" onclick="showCategory('metascience')">Thoughts</a>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Outside Interests</h3>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link" onclick="showCategory('interests')">Music</a>
+                        <a href="#" class="nav-link" onclick="showCategory('interests')">Travel</a>
+                        <a href="#" class="nav-link" onclick="showCategory('interests')">Photography</a>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Inspirations & Reading List</h3>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link" onclick="showCategory('reading')">Books</a>
+                        <a href="#" class="nav-link" onclick="showCategory('reading')">Articles</a>
+                        <a href="#" class="nav-link" onclick="showCategory('reading')">Recommendations</a>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main content -->
+        <main class="main">
+            <!-- Home view -->
+            <div id="home-view">
+                <div class="welcome-section">
+                    <h2>Welcome to my corner of the internet</h2>
+                    <p>I'm passionate about the intersection of technology and humanity, exploring how we can build better systems that serve people. This is where I share my thoughts on work, research, and the ideas that shape our world.</p>
+                </div>
+                
+                <div class="posts-section">
+                    <div class="section-header">
+                        <h3>Recent Writing</h3>
+                        <a href="#" class="see-all" onclick="showAllPosts()">See all notes →</a>
+                    </div>
+                    <div class="post-grid" id="recent-posts">
+                        <!-- Recent posts will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Posts view -->
+            <div id="posts-view" class="hidden">
+                <a href="#" class="back-button" onclick="showHome()">← Back to Home</a>
+                <h2 id="posts-title">All Posts</h2>
+                <div class="post-grid" id="posts-grid">
+                    <!-- Posts will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Individual post view -->
+            <div id="post-view" class="hidden">
+                <a href="#" class="back-button" onclick="goBack()">← Back</a>
+                <div id="post-content" class="post-content">
+                    <!-- Post content will be populated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Sample data
+        const posts = [
+            {
+                id: 1,
+                title: "2024: Centering",
+                content: `# 2024: Centering
+
+Reflecting on the year that was and the paths that led us here. This year has been about finding balance, understanding priorities, and creating space for what matters most.
+
+## On Finding Balance
+
+Balance isn't about perfect equilibrium—it's about understanding when to lean in and when to step back. This year taught me that centering isn't a destination but a practice.
+
+## Looking Forward
+
+As we move into the new year, I'm reminded that the most important work happens in the quiet moments between the noise.`,
+                excerpt: "Reflecting on the year that was and the paths that led us here...",
+                category: "work",
+                slug: "2024-centering",
+                createdAt: new Date('2024-12-15')
+            },
+            {
+                id: 2,
+                title: "Taste is a guide for what is worthwhile",
+                content: `# Taste is a guide for what is worthwhile
+
+Developing aesthetic sensibilities and understanding their role in decision-making is one of the most overlooked aspects of personal growth.
+
+## What is Taste?
+
+Taste isn't just about aesthetics—it's about the ability to discern quality, to recognize patterns, and to make choices that align with deeper values.
+
+## Cultivating Taste
+
+Taste is developed through exposure, practice, and reflection. It's about paying attention to what moves you and understanding why.`,
+                excerpt: "On developing aesthetic sensibilities and their role in decision-making...",
+                category: "metascience",
+                slug: "taste-guide-worthwhile",
+                createdAt: new Date('2024-11-20')
+            },
+            {
+                id: 3,
+                title: "Agentic Computing",
+                content: `# Agentic Computing
+
+Exploring the intersection of agency and computational systems—how we can create technology that empowers rather than constrains.
+
+## The Promise of Agency
+
+At its core, agentic computing is about creating systems that enhance human capability rather than replace it. It's about tools that understand context, adapt to needs, and respect autonomy.
+
+## Challenges and Opportunities
+
+The path forward requires careful consideration of power structures, accessibility, and the fundamental question of who gets to shape these systems.`,
+                excerpt: "Exploring the intersection of agency and computational systems...",
+                category: "work",
+                slug: "agentic-computing",
+                createdAt: new Date('2024-10-05')
+            }
+        ];
+        
+        let currentView = 'home';
+        let currentCategory = null;
+        let previousView = null;
+        
+        // Initialize the page
+        function init() {
+            showHome();
+        }
+        
+        // Navigation functions
+        function showHome() {
+            previousView = currentView;
+            currentView = 'home';
+            hideAllViews();
+            document.getElementById('home-view').classList.remove('hidden');
+            populateRecentPosts();
+            setActiveNavLink('home');
+        }
+        
+        function showAllPosts() {
+            previousView = currentView;
+            currentView = 'posts';
+            currentCategory = null;
+            hideAllViews();
+            document.getElementById('posts-view').classList.remove('hidden');
+            document.getElementById('posts-title').textContent = 'All Posts';
+            populatePostsGrid(posts);
+            setActiveNavLink('all-posts');
+        }
+        
+        function showCategory(category) {
+            previousView = currentView;
+            currentView = 'posts';
+            currentCategory = category;
+            hideAllViews();
+            document.getElementById('posts-view').classList.remove('hidden');
+            document.getElementById('posts-title').textContent = `${category.charAt(0).toUpperCase() + category.slice(1)} Posts`;
+            
+            const filteredPosts = posts.filter(post => post.category === category);
+            populatePostsGrid(filteredPosts);
+            setActiveNavLink(category);
+        }
+        
+        function showPost(postId) {
+            previousView = currentView;
+            currentView = 'post';
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                hideAllViews();
+                document.getElementById('post-view').classList.remove('hidden');
+                document.getElementById('post-content').innerHTML = parseMarkdown(post.content);
+            }
+        }
+        
+        function goBack() {
+            if (previousView === 'home') {
+                showHome();
+            } else if (previousView === 'posts') {
+                if (currentCategory) {
+                    showCategory(currentCategory);
+                } else {
+                    showAllPosts();
+                }
+            }
+        }
+        
+        function hideAllViews() {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('posts-view').classList.add('hidden');
+            document.getElementById('post-view').classList.add('hidden');
+        }
+        
+        function setActiveNavLink(section) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // This is a simplified active state - in a real app you'd match more precisely
+            if (section === 'home') {
+                document.querySelector('.nav-link').classList.add('active');
+            }
+        }
+        
+        // Content population functions
+        function populateRecentPosts() {
+            const recentPosts = posts.slice(0, 3);
+            const container = document.getElementById('recent-posts');
+            container.innerHTML = recentPosts.map(post => createPostCard(post)).join('');
+        }
+        
+        function populatePostsGrid(postsToShow) {
+            const container = document.getElementById('posts-grid');
+            container.innerHTML = postsToShow.map(post => createPostCard(post)).join('');
+        }
+        
+        function createPostCard(post) {
+            const formattedDate = post.createdAt.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            return `
+                <div class="post-card" onclick="showPost(${post.id})">
+                    <h4>${post.title}</h4>
+                    <p class="excerpt">${post.excerpt}</p>
+                    <div class="meta">
+                        <span class="category-badge">${post.category}</span>
+                        <span>${formattedDate}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Simple markdown parser
+        function parseMarkdown(content) {
+            return content
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^(?!<h|<\/p>)(.+)/gm, '<p>$1</p>')
+                .replace(/<p><\/p>/g, '');
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
